@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-13T07:45:56.000Z",
+  "updatedAt": "2026-11-13T09:04:20.000Z",
   "createdAt": "2026-11-12T06:46:58.633Z",
   "id": "jobHunterProc",
   "name": "Job Hunter - Process",
@@ -390,7 +390,7 @@
       "credentials": {
         "googleApi": {
           "id": "YOUR_GOOGLEAPI_ID",
-          "name": "Job Hunter Google service account"
+          "name": "Job Hunter Google Service Account"
         }
       },
       "onError": "continueRegularOutput"
@@ -822,8 +822,8 @@
   "staticData": null,
   "nodeGroups": [],
   "pinData": {},
-  "activeVersionId": "4541fa8b-b458-4bc5-84c1-7595633e3d1b",
-  "versionCounter": 2,
+  "activeVersionId": "345e50a7-beeb-4f59-96a9-743eed9a7d8f",
+  "versionCounter": 3,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [],

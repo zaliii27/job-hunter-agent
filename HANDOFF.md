@@ -59,10 +59,10 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 ## Open setup checklist
 - [x] Owner account created at http://localhost:5680
 - [x] Telegram credential "Job Hunter bot" created, bot started on the phone
-- [ ] Google credential "Job Hunter Google service account" created, sheet shared, `GOOGLE_SHEET_ID` in `.env` (optional; until then the sheet step is skipped)
-- [x] Telegram credential selected in Process (Send Digest) and Error Alert (Send Alert). Add to Sheet still needs the Google one.
+- [x] Google credential created (service account from the content-studio project), sheet "Job Hunter" with tab `Jobs` shared as Editor, `GOOGLE_SHEET_ID` in `.env`. Tested 2026-11-13: row added
+- [x] Telegram credential selected in Process (Send Digest) and Error Alert (Send Alert). Add to Sheet uses the Google one.
 - [x] Workflows published, end-to-end tests passed in this container on 2026-11-13 (paste: 84/100 in 15 s; daily: 164 fetched, 76 open to PH, 5 drafts in 38 s; Telegram digest received)
-- [ ] First commit pushed to GitHub (committed locally on 2026-11-13, not pushed yet)
+- [x] Pushed to GitHub (public): https://github.com/zaliii27/job-hunter-agent
 - [ ] Put the real portfolio URL and rate in `profile/skills-profile.md`
 
 ## Known issues
