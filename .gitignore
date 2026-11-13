@@ -1,0 +1,12 @@
+# Settings with personal IDs never go to GitHub (.env.example shows the format)
+.env
+
+# What the agent writes (your job leads, seen list, run log). Folders stay, contents don't.
+output/**
+!output/**/
+!output/**/.gitkeep
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini

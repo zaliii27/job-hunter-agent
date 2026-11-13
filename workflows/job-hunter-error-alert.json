@@ -1,0 +1,78 @@
+{
+  "updatedAt": "2026-11-13T07:45:54.000Z",
+  "createdAt": "2026-11-12T06:46:55.587Z",
+  "id": "jobHunterError",
+  "name": "Job Hunter - Error Alert",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c18e92ef-b36d-517a-8c07-71102f36abaf",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "={{ '⚠️ <b>Job Hunter failed</b>\\nWorkflow: ' + $json.workflow.name + '\\nNode: ' + ($json.execution.lastNodeExecuted || '-') + '\\nError: ' + String(($json.execution.error && $json.execution.error.message) || 'unknown').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').slice(0, 500) }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "d5896fff-5b7f-556c-910f-b38f6998db78",
+      "name": "Send Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        250,
+        0
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAMAPI_ID",
+          "name": "Job Hunter bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "activeVersionId": "0cb6f5db-6518-4fde-9ab0-001f601ff429",
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

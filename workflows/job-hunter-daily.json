@@ -1,0 +1,511 @@
+{
+  "updatedAt": "2026-11-13T07:45:59.000Z",
+  "createdAt": "2026-11-12T06:47:01.654Z",
+  "id": "jobHunterDaily",
+  "name": "Job Hunter - Daily",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "20 9,12,15,18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "7df3999b-7300-566d-ada1-168da7cf45c6",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/app/output/state/run-log.md",
+        "options": {}
+      },
+      "id": "1691c767-8a97-52a1-9e6c-fa6d5d8eb19a",
+      "name": "Read Log",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "log",
+        "options": {}
+      },
+      "id": "9b3d4f27-27fc-5e39-92b6-b2a32719f848",
+      "name": "Log Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8198f276-a3e0-5ea6-87fa-3d38b72d6857",
+              "leftValue": "={{ new RegExp('^- ' + $now.setZone('Asia/Manila').toFormat('yyyy-MM-dd') + '.*\\\\| daily \\\\|', 'm').test($json.log || '') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "10ea3a7a-a02f-5f54-ae1c-8b20aa3332f0",
+      "name": "Ran Today?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c65fc83f-a4ff-550e-af08-24c8036dcd37",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        600,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://remoteok.com/api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "f52c0264-6efd-5c67-b115-4366275577bb",
+      "name": "Remote OK",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        850,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://himalayas.app/jobs/api/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "n8n"
+            }
+          ]
+        }
+      },
+      "id": "3ce5e217-a78e-5ace-a763-6ba43046890d",
+      "name": "Himalayas n8n",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1050,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://himalayas.app/jobs/api/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "ai automation"
+            }
+          ]
+        }
+      },
+      "id": "1c0b66b6-0230-5e04-959c-d8221cdd92a6",
+      "name": "Himalayas AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1250,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://jobicy.com/api/v2/remote-jobs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "count",
+              "value": "50"
+            },
+            {
+              "name": "tag",
+              "value": "n8n"
+            }
+          ]
+        }
+      },
+      "id": "7034c2de-13fb-54ba-a667-a594e2d16046",
+      "name": "Jobicy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1450,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "search",
+              "value": "automation"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      },
+      "id": "901ee4b3-d49a-5e1f-8095-bff07f50de92",
+      "name": "Remotive",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1650,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect Jobs: turn 4 different API formats into one simple format.\n// Each source node may have failed (site down). Then we just skip it.\nconst from = (name) => {\n  try { return $(name).all().map(i => i.json).filter(j => !j.error); } catch (e) { return []; }\n};\n\n// Remove HTML tags so the AI and the notes get plain text\nconst clean = (html) => String(html || '')\n  .replace(/<\\/(p|li|h\\d|div|br)>/gi, '\\n').replace(/<br\\s*\\/?>/gi, '\\n')\n  .replace(/<[^>]*>/g, ' ')\n  .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '\"')\n  .replace(/&#0?39;|&rsquo;|&lsquo;/g, \"'\").replace(/&ldquo;|&rdquo;/g, '\"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')\n  .replace(/[ \\t]+/g, ' ').replace(/\\n\\s*\\n+/g, '\\n').trim();\n\nconst pay = (min, max, cur, per) => {\n  if (!min && !max) return 'Not stated';\n  const range = [min, max].filter(Boolean).join('-');\n  return `${cur || 'USD'} ${range}${per ? ' / ' + per : ''}`;\n};\n\n// Remote OK sends some text with broken encoding (\"â€“\"). This repairs it, or leaves it alone.\nconst fixText = (t) => { try { return decodeURIComponent(escape(String(t || ''))); } catch (e) { return String(t || ''); } };\n\nconst jobs = [];\n\n// Remote OK: one item per job, the first item is their legal notice (no id)\nfor (const r of from('Remote OK')) {\n  if (!r.id || !r.position) continue;\n  jobs.push({\n    id: 'remoteok:' + r.id, source: 'Remote OK', title: fixText(r.position), company: fixText(r.company),\n    type: (r.tags || []).join(', '), location: r.location || 'Not stated',\n    pay: pay(r.salary_min, r.salary_max, 'USD', 'year'), url: r.url,\n    description: clean(fixText(r.description)), posted: r.date || '',\n  });\n}\n\n// Himalayas: two searches, same format\nfor (const name of ['Himalayas n8n', 'Himalayas AI']) {\n  for (const res of from(name)) {\n    for (const h of res.jobs || []) {\n      const loc = (h.locationRestrictions || []).join(', ');\n      jobs.push({\n        id: 'himalayas:' + h.guid, source: 'Himalayas', title: h.title, company: h.companyName || '',\n        type: h.employmentType || '', location: loc || 'Worldwide',\n        pay: pay(h.minSalary, h.maxSalary, h.currency, h.salaryPeriod), url: h.applicationLink || h.guid,\n        description: clean(h.description || h.excerpt),\n        posted: h.pubDate ? new Date(Number(h.pubDate) * 1000).toISOString() : '',\n      });\n    }\n  }\n}\n\n// Jobicy\nfor (const res of from('Jobicy')) {\n  for (const j of res.jobs || []) {\n    jobs.push({\n      id: 'jobicy:' + j.id, source: 'Jobicy', title: j.jobTitle, company: j.companyName || '',\n      type: [].concat(j.jobType || []).join(', '), location: j.jobGeo || 'Not stated',\n      pay: pay(j.salaryMin, j.salaryMax, j.salaryCurrency, j.salaryPeriod), url: j.url,\n      description: clean(j.jobDescription || j.jobExcerpt), posted: j.pubDate || '',\n    });\n  }\n}\n\n// Remotive\nfor (const res of from('Remotive')) {\n  for (const m of res.jobs || []) {\n    jobs.push({\n      id: 'remotive:' + m.id, source: 'Remotive', title: m.title, company: m.company_name || '',\n      type: (m.job_type || '').replace(/_/g, ' '), location: m.candidate_required_location || 'Not stated',\n      pay: m.salary || 'Not stated', url: m.url,\n      description: clean(m.description), posted: m.publication_date || '',\n    });\n  }\n}\n\n// Keep descriptions a sensible size for the small local model\nfor (const j of jobs) j.description = j.description.slice(0, 3500);\n\nreturn [{ json: { jobs, count: jobs.length } }];\n"
+      },
+      "id": "4cb0482e-7b3d-568c-90e9-b400c9a935f3",
+      "name": "Collect Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1850,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jobHunterProc",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobsJson": "={{ JSON.stringify($json.jobs) }}",
+            "mode": "daily"
+          },
+          "matchingColumns": [
+            "jobsJson",
+            "mode"
+          ],
+          "schema": [
+            {
+              "id": "jobsJson",
+              "displayName": "jobsJson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "7ae265cf-c9c0-53c1-9abd-17622344481e",
+      "name": "Run Job Process",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2050,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Log": {
+      "main": [
+        [
+          {
+            "node": "Log Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Text": {
+      "main": [
+        [
+          {
+            "node": "Ran Today?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ran Today?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Remote OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Remote OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remote OK": {
+      "main": [
+        [
+          {
+            "node": "Himalayas n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Himalayas n8n": {
+      "main": [
+        [
+          {
+            "node": "Himalayas AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Himalayas AI": {
+      "main": [
+        [
+          {
+            "node": "Jobicy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jobicy": {
+      "main": [
+        [
+          {
+            "node": "Remotive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remotive": {
+      "main": [
+        [
+          {
+            "node": "Collect Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Jobs": {
+      "main": [
+        [
+          {
+            "node": "Run Job Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "jobHunterError"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "activeVersionId": "86be1f00-19c6-4516-b982-27d5576b255f",
+  "versionCounter": 1,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

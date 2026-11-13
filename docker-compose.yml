@@ -1,0 +1,45 @@
+# Job Hunter n8n: its own n8n, separate from everything else on this laptop.
+# Start:  docker compose up -d
+# Stop:   docker compose down        (workflows and credentials stay saved in the volume)
+# Open:   http://localhost:5680
+
+name: job-hunter
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:${N8N_VERSION:-2.37.7}
+    container_name: jobhunter-n8n
+    restart: unless-stopped
+    ports:
+      # laptop port 5680 -> n8n's port 5678 inside the container.
+      # 127.0.0.1 = only this laptop can open it, not other devices on your Wi-Fi.
+      - "127.0.0.1:5680:5678"
+    environment:
+      - TZ=Asia/Manila
+      - GENERIC_TIMEZONE=Asia/Manila          # the daily schedule uses Manila time
+      - N8N_EDITOR_BASE_URL=http://localhost:5680
+      - WEBHOOK_URL=http://localhost:5680/    # the paste form lives under this address
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_RESTRICT_FILE_ACCESS_TO=/app      # file nodes may only touch the folders below
+      # Settings from .env that the workflows read with {{ $env.NAME }}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID:-}
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3:8b}
+    volumes:
+      # n8n's memory: workflows, credentials, settings. Survives restarts.
+      - jobhunter_n8n_data:/home/node/.n8n
+      # What the agent reads (read-only, so it can never change your profile or prompt)
+      - ./profile:/app/profile:ro
+      - ./prompts:/app/prompts:ro
+      # What the agent writes: job notes, the "seen" list and the run log
+      - ./output:/app/output
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # lets n8n reach Ollama running on Windows
+
+volumes:
+  jobhunter_n8n_data:
+    name: jobhunter_n8n_data

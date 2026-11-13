@@ -1,0 +1,834 @@
+{
+  "updatedAt": "2026-11-13T07:45:56.000Z",
+  "createdAt": "2026-11-12T06:46:58.633Z",
+  "id": "jobHunterProc",
+  "name": "Job Hunter - Process",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "jobsJson"
+            },
+            {
+              "name": "mode"
+            }
+          ]
+        }
+      },
+      "id": "dbda8ff4-ee95-5efc-840f-b998a0ed3977",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c65fc83f-a4ff-550e-af08-24c8036dcd37",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7aba7808-2d18-5a09-bb57-f3da4ae16fa2",
+              "name": "jobsJson",
+              "value": "[{\"id\": \"paste:test1\", \"source\": \"OnlineJobs.ph\", \"title\": \"Part-time n8n Automation VA\", \"company\": \"Small e-commerce shop\", \"type\": \"Part-time\", \"location\": \"Philippines\", \"pay\": \"USD 6 / hour\", \"url\": \"(no link)\", \"description\": \"We need a part-time VA who can build n8n workflows: new Shopify orders to Google Sheets, Telegram alerts for the team, and a simple AI chatbot that answers FAQs from our product docs. 15-20 hours a week. Must be comfortable with APIs and webhooks. Start your application with the word ORANGE.\", \"posted\": \"\"}]",
+              "type": "string"
+            },
+            {
+              "id": "131a387c-4379-57f1-80a6-bb7eef95256a",
+              "name": "mode",
+              "value": "paste",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7581790d-82f6-57a9-942c-65d297cd2395",
+      "name": "Test Job",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e89c0995-b0e1-5fed-ad05-33f95f5f5238",
+              "name": "jobsJson",
+              "value": "={{ $json.jobsJson || '[]' }}",
+              "type": "string"
+            },
+            {
+              "id": "2096df8b-ab4b-5bfc-a3fd-9d418a715c82",
+              "name": "mode",
+              "value": "={{ $json.mode === 'daily' ? 'daily' : 'paste' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a0a13ba7-e8d8-5c1a-abaf-c92f09e2430a",
+      "name": "Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/app/output/state/seen.txt",
+        "options": {}
+      },
+      "id": "bef11a97-4c19-5dd8-b8a7-24ef871695ea",
+      "name": "Read Seen",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "seen",
+        "options": {}
+      },
+      "id": "35b07c11-3487-54c2-95a5-27970d3fe80e",
+      "name": "Seen Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fileSelector": "/app/profile/skills-profile.md",
+        "options": {}
+      },
+      "id": "7b110a02-aaf3-5be5-8deb-a7a79d6fe865",
+      "name": "Read Profile",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "profile",
+        "options": {}
+      },
+      "id": "1fc9f050-f0ae-5855-8b85-988014ef9b9b",
+      "name": "Profile Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fileSelector": "/app/prompts/proposal-writer.md",
+        "options": {}
+      },
+      "id": "743feb92-aa27-590c-8d57-5b5d83a92e91",
+      "name": "Read Prompt",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "prompt",
+        "options": {}
+      },
+      "id": "cd132d01-fbdb-5eb3-9a14-bed7b4b43f54",
+      "name": "Prompt Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Score Jobs: code decides the score, not the AI. Same job = same score, every time.\n// ===== SETTINGS: change these to tune the agent =====\nconst CONFIG = {\n  minScore: 45,      // daily mode: only jobs at or above this get a draft\n  maxDrafts: 5,      // daily mode: at most this many drafts per day\n  titleTimes: 2,     // a skill found in the job TITLE counts double\n  skills: [          // [label, pattern, points]\n    ['n8n', /\\bn8n\\b/i, 25],\n    ['AI automation', /\\bai[- ]automation\\b|\\bai agents?\\b|\\bagentic\\b/i, 15],\n    ['automation', /\\bautomat(e|ed|ion|ions|ing)\\b/i, 10],\n    ['RAG', /\\brag\\b|retrieval[- ]augmented|vector (db|database|store)|\\bembeddings?\\b/i, 10],\n    ['Make/Zapier', /\\bmake\\.com\\b|\\bzapier\\b|\\bintegromat\\b/i, 8],\n    ['LLMs', /\\bllms?\\b|\\bopenai\\b|\\bchatgpt\\b|\\bgpt-?\\d|\\bclaude\\b|\\bollama\\b|\\blangchain\\b/i, 8],\n    ['chatbots', /\\bchat ?bots?\\b/i, 8],\n    ['Python', /\\bpython\\b/i, 8],\n    ['workflows', /\\bworkflows?\\b/i, 5],\n    ['APIs/webhooks', /\\bapis?\\b|\\bwebhooks?\\b/i, 5],\n    ['no-code', /\\bno[- ]code\\b|\\blow[- ]code\\b/i, 5],\n    ['Telegram', /\\btelegram\\b/i, 4],\n    ['Google Sheets', /\\bgoogle sheets\\b/i, 4],\n    ['Docker', /\\bdocker\\b/i, 4],\n    ['virtual assistant', /\\bvirtual assistant\\b/i, 4],\n    ['JavaScript', /\\bjavascript\\b|\\bnode\\.?js\\b/i, 3],\n    ['networking', /\\bnetworking\\b/i, 3],\n  ],\n  goodType: /part[- ]?time|contract|freelance|\\bgig\\b|project[- ]based/i, goodTypePoints: 12,\n  philippinesPoints: 8,   // job says Philippines in location or text\n  senior: /\\b(senior|sr\\.?|lead|principal|staff|head|director|vp|manager|architect)\\b/i, seniorPoints: -20,\n  junior: /\\b(junior|jr\\.?|entry[- ]level|intern|internship|assistant|trainee)\\b/i, juniorPoints: 5,\n  redFlags: [\n    ['unpaid or commission only', /\\bunpaid\\b|commission[- ]only|equity[- ]only/i],\n    ['asks you to pay a fee', /(registration|training|starter|processing|application) fee|pay (a|the) (fee|deposit)/i],\n  ],\n  redFlagPoints: -25,\n  usOnly: /\\b(u\\.s\\.|us|usa)[- ]based\\b|\\b(u\\.s\\.|usa) only\\b|must (be|reside|live) in the (u\\.s\\.|us|usa|united states)/i, usOnlyPoints: -15,\n  curve: 60,         // raw points are squeezed into 0-100: 60 raw = 63, 100 raw = 81, 150 raw = 92\n};\n// ===== END SETTINGS =====\n\nconst input = $('Input').first().json;\nconst mode = input.mode === 'daily' ? 'daily' : 'paste';\nlet jobs = [];\ntry { jobs = JSON.parse(input.jobsJson || '[]'); } catch (e) { jobs = []; }\n\n// Jobs we already looked at (one id per line in the seen file)\nlet seenText = '';\ntry { seenText = $('Seen Text').first().json.seen || ''; } catch (e) {}\nconst seen = new Set(seenText.split('\\n').map(s => s.trim()).filter(Boolean));\n\n// Can someone in the Philippines apply? Empty or worldwide-ish = yes.\nconst openToPH = (loc) => {\n  const l = String(loc || '').toLowerCase().trim();\n  if (!l || l === 'not stated') return true;\n  return /worldwide|anywhere|global|asia|apac|philippines|southeast asia|gmt\\+8|^remote$/.test(l);\n};\n\nconst scoreJob = (j) => {\n  const title = String(j.title || '');\n  const text = [title, j.type, j.location, j.description].join(' \\n ');\n  let score = 0;\n  const matched = [];\n  for (const [label, re, pts] of CONFIG.skills) {\n    if (re.test(title)) { score += pts * CONFIG.titleTimes; matched.push(label); }\n    else if (re.test(text)) { score += pts; matched.push(label); }\n  }\n  const notes = [];\n  if (CONFIG.goodType.test(j.type + ' ' + title)) { score += CONFIG.goodTypePoints; notes.push('part-time/contract'); }\n  if (/philippines/i.test(j.location + ' ' + j.description)) { score += CONFIG.philippinesPoints; notes.push('mentions Philippines'); }\n  if (CONFIG.senior.test(title)) { score += CONFIG.seniorPoints; notes.push('senior role'); }\n  else if (CONFIG.junior.test(title)) { score += CONFIG.juniorPoints; notes.push('junior-friendly'); }\n  const flags = [];\n  for (const [label, re] of CONFIG.redFlags) if (re.test(text)) { flags.push(label); score += CONFIG.redFlagPoints; }\n  if (CONFIG.usOnly.test(text)) { flags.push('may be US-based only'); score += CONFIG.usOnlyPoints; }\n  if (!openToPH(j.location)) flags.push('location may not include the Philippines: ' + j.location);\n  // Screening instructions hidden in the post, like \"start your application with the word BLUE\".\n  // Many clients reject anyone who misses these, so code finds them and makes sure the draft follows them.\n  const desc = String(j.description || '');\n  const instructions = desc.split(/(?<=[.!?])\\s+|\\n+/)\n    .filter(s => /(start|begin) (your |the )?(application|message|proposal|reply|cover letter)|subject line|(include|use|write) the (word|phrase|code)|answer (these|the following|this) questions?|so (we|i) know you read/i.test(s))\n    .map(s => s.trim()).slice(0, 3);\n  const startWord = ((desc.match(/(?:start|begin)\\s+(?:your\\s+|the\\s+)?(?:application|message|proposal|reply|cover letter)\\s+with\\s+(?:the\\s+)?(?:word|phrase|code)?\\s*[\"'“]?([A-Za-z0-9][\\w-]*)/i) || [])[1] || '');\n  if (instructions.length) notes.push('has application instructions');\n  const raw = score;\n  score = raw <= 0 ? 0 : Math.round(100 * (1 - Math.exp(-raw / CONFIG.curve)));\n  return { ...j, score, raw, matched, notes, flags, instructions, startWord };\n};\n\n// Remove duplicates inside this batch (same id, or same title + company)\nconst unique = [];\nconst keys = new Set();\nfor (const j of jobs) {\n  const k2 = (String(j.title) + '|' + String(j.company)).toLowerCase();\n  if (keys.has(j.id) || keys.has(k2)) continue;\n  keys.add(j.id); keys.add(k2);\n  unique.push(j);\n}\n\nlet picked = [];\nconst stats = { mode, fetched: jobs.length, unique: unique.length, openToPH: 0, isNew: 0, matched: 0, drafted: 0, newIds: [] };\n\nif (mode === 'paste') {\n  picked = unique.map(scoreJob);                      // you chose it, so always draft\n} else {\n  const eligible = unique.filter(j => openToPH(j.location));\n  stats.openToPH = eligible.length;\n  const fresh = eligible.filter(j => !seen.has(j.id));\n  stats.isNew = fresh.length;\n  stats.newIds = fresh.map(j => j.id);                // all new ones get marked as seen at the end\n  const scored = fresh.map(scoreJob).sort((a, b) => b.score - a.score);\n  const good = scored.filter(j => j.score >= CONFIG.minScore);\n  stats.matched = good.length;\n  stats.topBelow = scored.slice(0, 3).filter(j => j.score < CONFIG.minScore).map(j => `${j.score} ${j.title}`);\n  picked = good.slice(0, CONFIG.maxDrafts);\n}\nstats.drafted = picked.length;\n\nif (picked.length === 0) return [{ json: { empty: true, stats } }];\nreturn picked.map(j => ({ json: { ...j, stats } }));\n"
+      },
+      "id": "915fd897-21d6-5728-91d6-7d34c8f5f694",
+      "name": "Score Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "af3d68ea-893b-5417-ad59-01cba03fa613",
+              "leftValue": "={{ $json.empty !== true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f2a4801a-5765-5757-8df4-962ef13f9c12",
+      "name": "Has Jobs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.OLLAMA_URL || 'http://host.docker.internal:11434') + '/api/chat' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": {{ JSON.stringify($env.OLLAMA_MODEL || 'qwen3:8b') }},\n  \"stream\": false,\n  \"think\": false,\n  \"format\": \"json\",\n  \"options\": { \"temperature\": 0.4, \"num_ctx\": 8192 },\n  \"messages\": [\n    { \"role\": \"system\", \"content\": {{ JSON.stringify($('Prompt Text').first().json.prompt) }} },\n    { \"role\": \"user\", \"content\": {{ JSON.stringify('SKILLS PROFILE:\\n' + $('Profile Text').first().json.profile + '\\n\\nJOB POST:\\nTitle: ' + $json.title + '\\nCompany: ' + ($json.company || '-') + '\\nType: ' + ($json.type || '-') + '\\nLocation: ' + ($json.location || '-') + '\\nPay: ' + ($json.pay || '-') + '\\n\\n' + String($json.description || '').slice(0, 2500) + (($json.instructions || []).length ? '\\n\\nAPPLICATION INSTRUCTIONS IN THE POST (follow them exactly):\\n- ' + $json.instructions.join('\\n- ') : '')) }} }\n  ]\n}",
+        "options": {
+          "timeout": 240000
+        }
+      },
+      "id": "291b5c85-b9be-56aa-9abc-3ec90db79414",
+      "name": "Ask Qwen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        -100
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Note: one Obsidian note + one sheet row per job.\n// Ask Qwen ran once per job, in the same order as Score Jobs, so item 0 belongs to job 0.\nconst jobs = $('Score Jobs').all().map(i => i.json);\nconst answers = $input.all().map(i => i.json);\nconst now = DateTime.now().setZone('Asia/Manila');\nconst today = now.toFormat('yyyy-MM-dd');\n\n// The model should return JSON. Small models sometimes add extra text, so we dig the JSON out.\nconst readAnswer = (a) => {\n  const raw = (a && a.message && a.message.content) || '';\n  if (!raw) return { fit: '', gaps: '', proposal: '', problem: 'The local AI did not answer (is Ollama running?).' };\n  const tryParse = (t) => { try { return JSON.parse(t); } catch (e) { return null; } };\n  const obj = tryParse(raw) || tryParse((raw.match(/\\{[\\s\\S]*\\}/) || [''])[0]);\n  if (!obj) return { fit: '', gaps: '', proposal: raw.trim(), problem: 'The AI answer was not clean JSON, the raw text is shown as the draft.' };\n  return { fit: String(obj.fit || ''), gaps: String(obj.gaps || ''), proposal: String(obj.proposal || ''), problem: '' };\n};\n\n// House style: no em dashes (the model forgets sometimes)\nconst tidy = (t) => String(t || '').replace(/\\s*—\\s*/g, ', ').replace(/–/g, '-').trim();\nconst safeName = (t) => String(t || '').replace(/[\\\\/:*?\"<>|#^\\[\\]]/g, '').replace(/\\s+/g, ' ').trim().slice(0, 70);\n\n// Name and portfolio link come from the skills profile\nlet profile = '';\ntry { profile = $('Profile Text').first().json.profile || ''; } catch (e) {}\nconst myName = ((profile.match(/^- Name:\\s*(.+)$/m) || [])[1] || '').trim();\nconst portfolio = ((profile.match(/## Portfolio link\\s*\\n-\\s*(https?:\\/\\/\\S+)/i) || [])[1] || '[portfolio link]');\nconst escRe = (t) => t.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n\n// Safety nets: code makes sure these are right, even if the small model forgets\nconst finish = (draft, j) => {\n  let d = draft;\n  if (j.startWord && !d.toLowerCase().startsWith(j.startWord.toLowerCase())) d = j.startWord + '\\n\\n' + d;   // screening word first\n  const nameAtEnd = myName ? new RegExp('\\\\s*' + escRe(myName) + '\\\\s*$', 'i') : null;\n  if (!/https?:\\/\\/|\\[portfolio link\\]/i.test(d)) {                                                      // portfolio line before the name\n    d = nameAtEnd && nameAtEnd.test(d) ? d.replace(nameAtEnd, '\\n\\n' + portfolio + '\\n' + myName) : d + '\\n\\n' + portfolio;\n  }\n  if (nameAtEnd && !nameAtEnd.test(d)) d += '\\n' + myName;                                                // sign with my name\n  return d;\n};\n\nreturn jobs.map((j, i) => {\n  const a = readAnswer(answers[i]);\n  const fit = tidy(a.fit), gaps = tidy(a.gaps);\n  const proposal = a.proposal ? finish(tidy(a.proposal), j) : '';\n  const fileName = `${today} ${j.score} ${safeName(j.title)} - ${safeName(j.company || j.source)}`;\n  const yaml = (v) => JSON.stringify(String(v || ''));\n  const content = [\n    '---',\n    'type: job-lead',\n    'status: new',\n    `score: ${j.score}`,\n    `source: ${yaml(j.source)}`,\n    `company: ${yaml(j.company)}`,\n    `job_type: ${yaml(j.type)}`,\n    `location: ${yaml(j.location)}`,\n    `pay: ${yaml(j.pay)}`,\n    `link: ${yaml(j.url)}`,\n    `found: ${today}`,\n    '---',\n    `# ${j.title}${j.company ? ' (' + j.company + ')' : ''}`,\n    '',\n    `**Score:** ${j.score}/100`,\n    `**Matched skills:** ${j.matched.join(', ') || 'none'}`,\n    j.notes.length ? `**Notes:** ${j.notes.join(', ')}` : null,\n    j.flags.length ? `**Check first:** ${j.flags.join('; ')}` : null,\n    `**Why it fits:** ${fit || '-'}`,\n    `**Gaps:** ${gaps || '-'}`,\n    a.problem ? `\\n> [!warning] ${a.problem}` : null,\n    '',\n    '## Draft proposal (review and edit before sending)',\n    '',\n    proposal || '(no draft)',\n    '',\n    '## Job post',\n    '',\n    `Type: ${j.type || '-'} | Location: ${j.location || '-'} | Pay: ${j.pay || '-'}`,\n    '',\n    String(j.description || '').slice(0, 2500),\n    '',\n    `Source: ${/^https?:/.test(j.url) ? `[${j.source}](${j.url})` : j.source + ' (pasted by hand)'}. Found by Job Hunter Agent, drafted by qwen3:8b on ${now.toFormat('yyyy-MM-dd HH:mm')}. Nothing was sent.`,\n    '',\n    '#job-lead',\n    '',\n  ].filter(line => line !== null).join('\\n');\n\n  const row = {\n    Date: today, Score: j.score, Title: j.title, Company: j.company, Source: j.source,\n    Type: j.type, Location: j.location, Pay: j.pay, Link: j.url,\n    Matched: j.matched.join(', '), Flags: j.flags.join('; '), Fit: fit, Gaps: gaps,\n    Draft: proposal, Status: 'new', Note: fileName,\n  };\n  return { json: { id: j.id, fileName, content, row, score: j.score, title: j.title, company: j.company, source: j.source, url: j.url, fit, gaps, proposal, matched: j.matched, flags: j.flags } };\n});\n"
+      },
+      "id": "c41c1869-adae-5b98-a321-eb6e362427b7",
+      "name": "Build Note",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "content",
+        "options": {}
+      },
+      "id": "8a7d45ce-9290-56dc-ba16-0e7467a0330d",
+      "name": "Note File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2600,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/app/output/job-leads/{{ $('Build Note').item.json.fileName }}.md",
+        "options": {
+          "append": false
+        }
+      },
+      "id": "b0bd5cf0-f0d0-57e5-8d27-0e2d914c437b",
+      "name": "Save Note",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2800,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One sheet row per job. The sheet's first row must have these column names.\nreturn $('Build Note').all().map(i => ({ json: i.json.row }));"
+      },
+      "id": "ce362fff-5a65-5a71-bf12-679cfc3a0fd4",
+      "name": "Sheet Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3000,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "54f0f669-6445-51c1-9384-a29c99fc25da",
+              "leftValue": "={{ !!$env.GOOGLE_SHEET_ID }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c7c8cd7a-1231-594c-83ae-69150b2553ec",
+      "name": "Sheet Set?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3200,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Jobs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "c91c9874-a19d-56bb-bb13-1e372b96d9ba",
+      "name": "Add to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3400,
+        -200
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "YOUR_GOOGLEAPI_ID",
+          "name": "Job Hunter Google service account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Digest: the Telegram message, the \"seen\" list and the log line.\nconst stats = $('Score Jobs').first().json.stats;\nlet notes = [];\ntry { notes = $('Build Note').all().map(i => i.json); } catch (e) { notes = []; }   // no jobs today = Build Note never ran\n\nconst esc = (t) => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst now = DateTime.now().setZone('Asia/Manila');\nlet text = '';\n\nif (stats.mode === 'paste') {\n  const n = notes[0];\n  if (!n) {\n    text = '📋 Job Hunter: the pasted job was empty, nothing to score.';\n  } else {\n    text = `📋 <b>Pasted job scored ${n.score}/100</b>\\n<b>${esc(n.title)}</b>${n.company ? ' · ' + esc(n.company) : ''} (${esc(n.source)})\\n`\n      + `Matched: ${esc(n.matched.join(', ') || 'none')}\\n`\n      + (n.flags.length ? `⚠️ ${esc(n.flags.join('; '))}\\n` : '')\n      + `Why: ${esc(n.fit || '-')}\\nGaps: ${esc(n.gaps || '-')}\\n\\n`\n      + `<b>Draft (review before sending):</b>\\n${esc(n.proposal).slice(0, 2800)}\\n\\n`\n      + `Saved to output/job-leads. Nothing was sent.`;\n  }\n} else if (notes.length === 0) {\n  text = `🎯 Job Hunter: no new matches today.\\nChecked ${stats.fetched} jobs, ${stats.openToPH} open to PH, ${stats.isNew} new.`\n    + (stats.topBelow && stats.topBelow.length ? `\\nClosest: ${esc(stats.topBelow.join(' | '))}` : '');\n} else {\n  const lines = notes.map((n, i) =>\n    `${i + 1}. <b>${n.score}</b> · <a href=\"${esc(n.url)}\">${esc(n.title)}</a>${n.company ? ' · ' + esc(n.company) : ''} (${esc(n.source)})`\n    + (n.flags.length ? `\\n   ⚠️ ${esc(n.flags.join('; '))}` : '')\n    + (n.fit ? `\\n   ${esc(n.fit).slice(0, 220)}` : ''));\n  text = `🎯 <b>Job Hunter: ${notes.length} new match${notes.length > 1 ? 'es' : ''}</b>\\n`\n    + `Checked ${stats.fetched} jobs, ${stats.openToPH} open to PH, ${stats.isNew} new.\\n\\n`\n    + lines.join('\\n\\n')\n    + `\\n\\nDrafts are in the Job Hunter sheet and output/job-leads. Review, edit, then apply yourself.`;\n}\n\n// Mark jobs as seen so tomorrow only brings new ones. Pasted jobs are not added.\nconst seenLines = (stats.newIds || []).map(id => id + '\\n').join('');\nconst logLine = `- ${now.toFormat('yyyy-MM-dd HH:mm')} | ${stats.mode} | fetched ${stats.fetched} | open to PH ${stats.openToPH} | new ${stats.isNew} | drafted ${notes.length}`\n  + (notes.length ? ' | ' + notes.map(n => `[[${n.fileName}]]`).join(', ') : '') + '\\n';\n\nreturn [{ json: { text: text.slice(0, 4000), seenLines: seenLines || '', hasSeen: seenLines.length > 0, logLine } }];\n"
+      },
+      "id": "f7b9916c-acd0-5154-9499-00fa70ffb00f",
+      "name": "Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3800,
+        100
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "fe38c3cb-ab6e-52ad-9502-eab473385403",
+      "name": "Send Digest",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4000,
+        -100
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAMAPI_ID",
+          "name": "Job Hunter bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "logLine",
+        "options": {}
+      },
+      "id": "64e70c59-8f36-52a9-b47d-0e85442a69f3",
+      "name": "Log File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4000,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/app/output/state/run-log.md",
+        "options": {
+          "append": true
+        }
+      },
+      "id": "fc3a2cce-b35a-5fa4-8c8c-5fed7aaba417",
+      "name": "Append Log",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        4200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c547b439-5c62-55d7-b968-ac948a8ff7d2",
+              "leftValue": "={{ $json.hasSeen }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "76aaf310-ed3c-5423-8936-5a68c90fd45a",
+      "name": "New Seen?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "seenLines",
+        "options": {}
+      },
+      "id": "b0c98305-7974-5ecd-be0b-1f8a016ccab8",
+      "name": "Seen File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/app/output/state/seen.txt",
+        "options": {
+          "append": true
+        }
+      },
+      "id": "69e3eb29-c7e9-58a7-9b3c-5b0210f28e2e",
+      "name": "Append Seen",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        4400,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Test Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Job": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "Read Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Seen": {
+      "main": [
+        [
+          {
+            "node": "Seen Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seen Text": {
+      "main": [
+        [
+          {
+            "node": "Read Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Profile": {
+      "main": [
+        [
+          {
+            "node": "Profile Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profile Text": {
+      "main": [
+        [
+          {
+            "node": "Read Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Prompt": {
+      "main": [
+        [
+          {
+            "node": "Prompt Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Text": {
+      "main": [
+        [
+          {
+            "node": "Score Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Jobs": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs?": {
+      "main": [
+        [
+          {
+            "node": "Ask Qwen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Qwen": {
+      "main": [
+        [
+          {
+            "node": "Build Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Note": {
+      "main": [
+        [
+          {
+            "node": "Note File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Note File": {
+      "main": [
+        [
+          {
+            "node": "Save Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Note": {
+      "main": [
+        [
+          {
+            "node": "Sheet Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet Row": {
+      "main": [
+        [
+          {
+            "node": "Sheet Set?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet Set?": {
+      "main": [
+        [
+          {
+            "node": "Add to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Digest": {
+      "main": [
+        [
+          {
+            "node": "Send Digest",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "New Seen?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log File": {
+      "main": [
+        [
+          {
+            "node": "Append Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Seen?": {
+      "main": [
+        [
+          {
+            "node": "Seen File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seen File": {
+      "main": [
+        [
+          {
+            "node": "Append Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "jobHunterError"
+  },
+  "staticData": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "activeVersionId": "4541fa8b-b458-4bc5-84c1-7595633e3d1b",
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "updatedAt": "2026-11-13T07:46:02.000Z",
+  "createdAt": "2026-11-12T06:47:04.690Z",
+  "id": "jobHunterPaste",
+  "name": "Job Hunter - Paste",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Job Hunter: paste a job",
+        "formDescription": "Paste a job you found on OnlineJobs.ph, Upwork or a Facebook group. The agent scores it against your skills and drafts a proposal in about a minute. Nothing is sent.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Job title",
+              "requiredField": true,
+              "placeholder": "e.g. Part-time n8n developer"
+            },
+            {
+              "fieldLabel": "Where did you see it?",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "OnlineJobs.ph"
+                  },
+                  {
+                    "option": "Upwork"
+                  },
+                  {
+                    "option": "Facebook group"
+                  },
+                  {
+                    "option": "LinkedIn"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Company or client (optional)"
+            },
+            {
+              "fieldLabel": "Job type (optional)",
+              "placeholder": "Part-time, Freelance, Full-time"
+            },
+            {
+              "fieldLabel": "Pay or rate (optional)"
+            },
+            {
+              "fieldLabel": "Link to the post (optional)"
+            },
+            {
+              "fieldLabel": "Full job post",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "placeholder": "Paste the whole job post here"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "path": "job-paste",
+          "appendAttribution": false,
+          "buttonLabel": "Score and draft",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Done. The score and draft are in Telegram, the sheet and output/job-leads."
+            }
+          }
+        }
+      },
+      "id": "2404db06-0701-5177-b03b-69f4753f5531",
+      "name": "Job Paste Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "30bd4548-93e1-5f75-97f0-f08f4a83ca52"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Job: turn the form answers into the same job format the APIs use.\nconst f = $input.first().json;\nconst text = String(f['Full job post'] || '').trim();\nconst firstLine = text.split('\\n').map(s => s.trim()).find(Boolean) || 'Pasted job';\nconst title = String(f['Job title'] || '').trim() || firstLine.slice(0, 80);\n\n// Small fingerprint of the text, so the same paste gets the same id\nlet h = 0;\nfor (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) | 0;\n\nconst job = {\n  id: 'paste:' + Math.abs(h).toString(36),\n  source: f['Where did you see it?'] || 'Pasted',\n  title,\n  company: String(f['Company or client (optional)'] || '').trim(),\n  type: String(f['Job type (optional)'] || '').trim(),\n  location: 'Not stated',\n  pay: String(f['Pay or rate (optional)'] || '').trim() || 'Not stated',\n  url: String(f['Link to the post (optional)'] || '').trim() || '(no link)',\n  description: text.slice(0, 3500),\n  posted: '',\n};\nreturn [{ json: { jobsJson: JSON.stringify([job]), mode: 'paste' } }];\n"
+      },
+      "id": "00bd5e7c-23f6-53dc-95da-3e0897c233ce",
+      "name": "Build Job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        250,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jobHunterProc",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "jobsJson": "={{ $json.jobsJson }}",
+            "mode": "paste"
+          },
+          "matchingColumns": [
+            "jobsJson",
+            "mode"
+          ],
+          "schema": [
+            {
+              "id": "jobsJson",
+              "displayName": "jobsJson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "7ae265cf-c9c0-53c1-9abd-17622344481e",
+      "name": "Run Job Process",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        500,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Job Paste Form": {
+      "main": [
+        [
+          {
+            "node": "Build Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Job": {
+      "main": [
+        [
+          {
+            "node": "Run Job Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "jobHunterError"
+  },
+  "staticData": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "activeVersionId": "dbc2e50f-5232-4b0d-bda0-d30186c82101",
+  "versionCounter": 1,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
