@@ -44,7 +44,8 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 - Owner style: beginner-friendly explanations, no em dashes, one step at a time.
 
 ## Good next tasks for a free model (small and safe)
-- [ ] Take the 4 README screenshots and record the demo video (`docs/demo-script.md`).
+- [x] 4 README screenshots taken 2026-11-13. Retake `03-google-sheet.png` once a daily run has filled the sheet (it only shows the test row).
+- [ ] Record the demo video (`docs/demo-script.md`), optional.
 - [ ] Add a "Telegram paste": the bot accepts `job: <post>` and runs Process. Needs a Telegram Trigger, which needs a public URL (tunnel), so it's bigger than it looks.
 - [ ] Weekly stats message: how many jobs, average score, how many applied (read the sheet's Status column).
 - [ ] Archive the one-time workflow "Job Hunter - TEST new sources (one-time)" in the n8n UI (used on 2026-11-13 to test WWR and 4dayweek.io).
@@ -66,5 +67,6 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 - [ ] Put the real portfolio URL and rate in `profile/skills-profile.md`
 
 ## Known issues
+- The "Why it fits" line can invent experience. On 2026-11-13 qwen3 wrote AWS Lambda / API Gateway experience that is not in the profile, and called Zali "she" (no pronouns in the profile). Code does not check fit/gaps yet. Next fix: prompt rule (use the name, no pronouns; only listed tools) plus a code check that flags tool names not found in the profile.
 - qwen3:8b sometimes writes a proposal line in the client's voice ("We're a small shop..."). Fix it when reviewing; a prompt fix is in "Bigger tasks".
 - With `minScore` 45, weak matches (for example an ML inference role at 62) can fill the last draft slots. Consider 60 to 65 after a week of results.
