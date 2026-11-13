@@ -67,6 +67,6 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 - [ ] Put the real portfolio URL and rate in `profile/skills-profile.md`
 
 ## Known issues
-- The "Why it fits" line can invent experience. On 2026-11-13 qwen3 wrote AWS Lambda / API Gateway experience that is not in the profile, and called Zali "she" (no pronouns in the profile). Code does not check fit/gaps yet. Next fix: prompt rule (use the name, no pronouns; only listed tools) plus a code check that flags tool names not found in the profile.
+- Fixed 2026-11-13: drafts sometimes claimed tools not in the profile (AWS, OpenAI) and guessed pronouns. Now the prompt forbids it, `Build Note` replaces he/she with the name, and a claim check (TOOLS list in `Build Note`) adds a "draft claims X, not in your profile" warning to the note, sheet and Telegram. Add tools to that list when you see new ones. Re-tested on the Kreative Media job: clean draft.
 - qwen3:8b sometimes writes a proposal line in the client's voice ("We're a small shop..."). Fix it when reviewing; a prompt fix is in "Bigger tasks".
 - With `minScore` 45, weak matches (for example an ML inference role at 62) can fill the last draft slots. Consider 60 to 65 after a week of results.

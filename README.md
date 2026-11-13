@@ -32,7 +32,7 @@ Finding freelance automation work as a beginner takes hours a day:
 
 1. **Legal sources only.** Every source was checked for terms and API access before use ([docs/sources.md](docs/sources.md)). Sites that forbid bots go through a 30-second paste form instead.
 2. **Code scores, the AI writes.** The score (0 to 100) comes from clear rules: skills matched (n8n, AI automation, RAG, Python...), job type, whether the Philippines can apply, seniority, scam signs. Same job, same score, every time, and you can see why. The 8B model only writes the "why it fits" line and the draft.
-3. **Guardrails a small model can't forget.** Code finds screening instructions in the post and makes sure the draft follows them, signs it with my name, and adds my portfolio link. The prompt also forbids inventing experience: the model may only use facts from [profile/skills-profile.md](profile/skills-profile.md).
+3. **Guardrails a small model can't forget.** Code finds screening instructions in the post and makes sure the draft follows them, signs it with my name, and adds my portfolio link. It also checks every tool the draft claims (AWS, OpenAI, Zapier...) against my profile and puts a warning on the Telegram message if one is made up. The prompt also forbids inventing experience: the model may only use facts from [profile/skills-profile.md](profile/skills-profile.md).
 4. **Human in the loop.** Drafts land in a sheet and as notes with `status: new`. I edit and send them myself.
 5. **Runs on a laptop that sleeps.** The daily workflow checks at 9 AM, 12 PM, 3 PM and 6 PM and only fetches once per day. Errors go to Telegram.
 
