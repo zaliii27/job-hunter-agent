@@ -23,7 +23,7 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 | Job source research | `docs/sources.md` |
 
 ## How the pieces fit
-- **Daily:** Schedule (9:20, 12:20, 15:20, 18:20) → Read run log → "Ran Today?" (skip if a `| daily |` line exists for today) → 5 HTTP nodes (Remote OK, Himalayas x2, Jobicy, Remotive, each `executeOnce` + continue on error) → `Collect Jobs` (Code: one format) → calls Process with `jobsJson`, `mode=daily`.
+- **Daily:** Schedule (9:20, 12:20, 15:20, 18:20) → Read run log → "Ran Today?" (skip if a `| daily |` line exists for today) → 8 HTTP nodes (Remote OK, Himalayas x2, Jobicy, Remotive, WWR RSS x2, 4dayweek.io, each `executeOnce` + continue on error) → `Collect Jobs` (Code: one format) → calls Process with `jobsJson`, `mode=daily`.
 - **Paste:** Form trigger (path `job-paste`) → `Build Job` (Code) → calls Process with `mode=paste`.
 - **Process:** Input → read seen list, profile, prompt → `Score Jobs` (Code, all tuning in the SETTINGS block at the top) → `Has Jobs?` → `Ask Qwen` (Ollama `/api/chat`, `format: json`, `think: false`) → `Build Note` (Code: parses JSON, enforces screening word / portfolio line / name, builds note + sheet row) → save note → `Sheet Set?` → `Add to Sheet` → `Digest` (Code, runs once) → Telegram + run log + seen list.
 - Daily mode: drops jobs the Philippines can't apply for, already-seen jobs, and scores under 45; max 5 drafts. Paste mode: always drafts and only flags problems.
@@ -47,6 +47,7 @@ An n8n agent that pulls remote AI automation jobs from official APIs, accepts pa
 - [ ] Take the 4 README screenshots and record the demo video (`docs/demo-script.md`).
 - [ ] Add a "Telegram paste": the bot accepts `job: <post>` and runs Process. Needs a Telegram Trigger, which needs a public URL (tunnel), so it's bigger than it looks.
 - [ ] Weekly stats message: how many jobs, average score, how many applied (read the sheet's Status column).
+- [ ] Archive the one-time workflow "Job Hunter - TEST new sources (one-time)" in the n8n UI (used on 2026-11-13 to test WWR and 4dayweek.io).
 - [ ] Add more Himalayas searches (for example `q=zapier`, `q=chatbot`) in Daily, one HTTP node each, plus a line in `Collect Jobs`.
 - [ ] Tune SETTINGS in `Score Jobs` after a week of real results (which jobs were good but scored low?).
 

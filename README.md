@@ -23,7 +23,8 @@ Finding freelance automation work as a beginner takes hours a day:
 ```
  Official job APIs ──┐                                       ┌──> Telegram digest (phone)
  (Himalayas, Remote OK,│   Score with code   Draft with      ├──> Google Sheet (tracking)
-  Jobicy, Remotive)    ├─> (0-100, rules) ─> local LLM ──────┤
+  Jobicy, Remotive,    ├─> (0-100, rules) ─> local LLM ──────┤
+  WWR, 4dayweek.io)    │
  Paste form ──────────┘   filter + dedupe    (qwen3:8b)      └──> Markdown note per job
  (OnlineJobs.ph, Upwork,
   FB groups: by hand)
@@ -39,7 +40,7 @@ Finding freelance automation work as a beginner takes hours a day:
 
 | Workflow | What it does |
 |---|---|
-| `Job Hunter - Daily` | Pulls jobs from 4 official APIs once a day, normalizes them into one format, sends them to Process |
+| `Job Hunter - Daily` | Pulls jobs from 6 official APIs and feeds once a day, normalizes them into one format, sends them to Process |
 | `Job Hunter - Paste` | A form at `localhost:5680/form/job-paste` for jobs I found on sites that don't allow bots |
 | `Job Hunter - Process` | Dedupe, score, draft with qwen3, save note + sheet row, Telegram digest, run log |
 | `Job Hunter - Error Alert` | Sends a Telegram message if any of the above fails |
@@ -116,10 +117,12 @@ After changing a workflow in the editor, run `bash scripts/export-workflows.sh` 
 
 | Source | How | Why |
 |---|---|---|
-| Himalayas, Remote OK, Jobicy, Remotive | Official public APIs, once a day, with links back | Their terms allow it, with attribution and rate limits |
+| Himalayas, Remote OK, Jobicy, Remotive, 4dayweek.io | Official public APIs, once a day, with links back | Their terms allow it, with attribution and rate limits |
+| We Work Remotely | Official RSS feeds (2 categories), once a day | Public feeds, links back to WWR |
 | OnlineJobs.ph | Paste form | Terms section 7.4 forbids automated access |
 | Upwork | Paste form | RSS shut down 2024-08-20; the API needs an approved key |
 | Facebook groups | Paste form | Groups API removed in 2024, scraping is against Meta's terms |
+| LinkedIn, X, Kalibrr, Bossjob, Jora, PhilJobNet | Paste form | Terms forbid bots, no public API, or (X) paid only |
 
 Full notes and links: [docs/sources.md](docs/sources.md).
 

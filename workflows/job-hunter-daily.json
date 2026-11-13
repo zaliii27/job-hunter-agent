@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-13T07:45:59.000Z",
+  "updatedAt": "2026-11-13T08:06:36.000Z",
   "createdAt": "2026-11-12T06:47:01.654Z",
   "id": "jobHunterDaily",
   "name": "Job Hunter - Daily",
@@ -291,14 +291,127 @@
     },
     {
       "parameters": {
-        "jsCode": "// Collect Jobs: turn 4 different API formats into one simple format.\n// Each source node may have failed (site down). Then we just skip it.\nconst from = (name) => {\n  try { return $(name).all().map(i => i.json).filter(j => !j.error); } catch (e) { return []; }\n};\n\n// Remove HTML tags so the AI and the notes get plain text\nconst clean = (html) => String(html || '')\n  .replace(/<\\/(p|li|h\\d|div|br)>/gi, '\\n').replace(/<br\\s*\\/?>/gi, '\\n')\n  .replace(/<[^>]*>/g, ' ')\n  .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '\"')\n  .replace(/&#0?39;|&rsquo;|&lsquo;/g, \"'\").replace(/&ldquo;|&rdquo;/g, '\"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')\n  .replace(/[ \\t]+/g, ' ').replace(/\\n\\s*\\n+/g, '\\n').trim();\n\nconst pay = (min, max, cur, per) => {\n  if (!min && !max) return 'Not stated';\n  const range = [min, max].filter(Boolean).join('-');\n  return `${cur || 'USD'} ${range}${per ? ' / ' + per : ''}`;\n};\n\n// Remote OK sends some text with broken encoding (\"â€“\"). This repairs it, or leaves it alone.\nconst fixText = (t) => { try { return decodeURIComponent(escape(String(t || ''))); } catch (e) { return String(t || ''); } };\n\nconst jobs = [];\n\n// Remote OK: one item per job, the first item is their legal notice (no id)\nfor (const r of from('Remote OK')) {\n  if (!r.id || !r.position) continue;\n  jobs.push({\n    id: 'remoteok:' + r.id, source: 'Remote OK', title: fixText(r.position), company: fixText(r.company),\n    type: (r.tags || []).join(', '), location: r.location || 'Not stated',\n    pay: pay(r.salary_min, r.salary_max, 'USD', 'year'), url: r.url,\n    description: clean(fixText(r.description)), posted: r.date || '',\n  });\n}\n\n// Himalayas: two searches, same format\nfor (const name of ['Himalayas n8n', 'Himalayas AI']) {\n  for (const res of from(name)) {\n    for (const h of res.jobs || []) {\n      const loc = (h.locationRestrictions || []).join(', ');\n      jobs.push({\n        id: 'himalayas:' + h.guid, source: 'Himalayas', title: h.title, company: h.companyName || '',\n        type: h.employmentType || '', location: loc || 'Worldwide',\n        pay: pay(h.minSalary, h.maxSalary, h.currency, h.salaryPeriod), url: h.applicationLink || h.guid,\n        description: clean(h.description || h.excerpt),\n        posted: h.pubDate ? new Date(Number(h.pubDate) * 1000).toISOString() : '',\n      });\n    }\n  }\n}\n\n// Jobicy\nfor (const res of from('Jobicy')) {\n  for (const j of res.jobs || []) {\n    jobs.push({\n      id: 'jobicy:' + j.id, source: 'Jobicy', title: j.jobTitle, company: j.companyName || '',\n      type: [].concat(j.jobType || []).join(', '), location: j.jobGeo || 'Not stated',\n      pay: pay(j.salaryMin, j.salaryMax, j.salaryCurrency, j.salaryPeriod), url: j.url,\n      description: clean(j.jobDescription || j.jobExcerpt), posted: j.pubDate || '',\n    });\n  }\n}\n\n// Remotive\nfor (const res of from('Remotive')) {\n  for (const m of res.jobs || []) {\n    jobs.push({\n      id: 'remotive:' + m.id, source: 'Remotive', title: m.title, company: m.company_name || '',\n      type: (m.job_type || '').replace(/_/g, ' '), location: m.candidate_required_location || 'Not stated',\n      pay: m.salary || 'Not stated', url: m.url,\n      description: clean(m.description), posted: m.publication_date || '',\n    });\n  }\n}\n\n// Keep descriptions a sensible size for the small local model\nfor (const j of jobs) j.description = j.description.slice(0, 3500);\n\nreturn [{ json: { jobs, count: jobs.length } }];\n"
+        "url": "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "30f13efd-d985-53c3-8dd2-fed9f9722f03",
+      "name": "WWR Programming",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1850,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://weworkremotely.com/categories/all-other-remote-jobs.rss",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "34188da2-3222-5918-ba26-93af1591c78e",
+      "name": "WWR Other",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2050,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://4dayweek.io/api/v2/jobs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "job-hunter-agent/1.0 (personal job search, n8n)"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "n8n"
+            },
+            {
+              "name": "work_arrangement",
+              "value": "remote"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      },
+      "id": "aa3a12f9-d788-5031-9eb7-0ab1bc3121c7",
+      "name": "4dayweek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2250,
+        100
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect Jobs: turn 6 different source formats into one simple format.\n// Each source node may have failed (site down). Then we just skip it.\nconst from = (name) => {\n  try { return $(name).all().map(i => i.json).filter(j => !j.error); } catch (e) { return []; }\n};\n\n// Remove HTML tags so the AI and the notes get plain text\nconst clean = (html) => String(html || '')\n  .replace(/<\\/(p|li|h\\d|div|br)>/gi, '\\n').replace(/<br\\s*\\/?>/gi, '\\n')\n  .replace(/<[^>]*>/g, ' ')\n  .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '\"')\n  .replace(/&#0?39;|&rsquo;|&lsquo;/g, \"'\").replace(/&ldquo;|&rdquo;/g, '\"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')\n  .replace(/[ \\t]+/g, ' ').replace(/\\n\\s*\\n+/g, '\\n').trim();\n\nconst pay = (min, max, cur, per) => {\n  if (!min && !max) return 'Not stated';\n  const range = [min, max].filter(Boolean).join('-');\n  return `${cur || 'USD'} ${range}${per ? ' / ' + per : ''}`;\n};\n\n// Remote OK sends some text with broken encoding (\"â€“\"). This repairs it, or leaves it alone.\nconst fixText = (t) => { try { return decodeURIComponent(escape(String(t || ''))); } catch (e) { return String(t || ''); } };\n\nconst jobs = [];\n\n// Remote OK: one item per job, the first item is their legal notice (no id)\nfor (const r of from('Remote OK')) {\n  if (!r.id || !r.position) continue;\n  jobs.push({\n    id: 'remoteok:' + r.id, source: 'Remote OK', title: fixText(r.position), company: fixText(r.company),\n    type: (r.tags || []).join(', '), location: r.location || 'Not stated',\n    pay: pay(r.salary_min, r.salary_max, 'USD', 'year'), url: r.url,\n    description: clean(fixText(r.description)), posted: r.date || '',\n  });\n}\n\n// Himalayas: two searches, same format\nfor (const name of ['Himalayas n8n', 'Himalayas AI']) {\n  for (const res of from(name)) {\n    for (const h of res.jobs || []) {\n      const loc = (h.locationRestrictions || []).join(', ');\n      jobs.push({\n        id: 'himalayas:' + h.guid, source: 'Himalayas', title: h.title, company: h.companyName || '',\n        type: h.employmentType || '', location: loc || 'Worldwide',\n        pay: pay(h.minSalary, h.maxSalary, h.currency, h.salaryPeriod), url: h.applicationLink || h.guid,\n        description: clean(h.description || h.excerpt),\n        posted: h.pubDate ? new Date(Number(h.pubDate) * 1000).toISOString() : '',\n      });\n    }\n  }\n}\n\n// Jobicy\nfor (const res of from('Jobicy')) {\n  for (const j of res.jobs || []) {\n    jobs.push({\n      id: 'jobicy:' + j.id, source: 'Jobicy', title: j.jobTitle, company: j.companyName || '',\n      type: [].concat(j.jobType || []).join(', '), location: j.jobGeo || 'Not stated',\n      pay: pay(j.salaryMin, j.salaryMax, j.salaryCurrency, j.salaryPeriod), url: j.url,\n      description: clean(j.jobDescription || j.jobExcerpt), posted: j.pubDate || '',\n    });\n  }\n}\n\n// Remotive\nfor (const res of from('Remotive')) {\n  for (const m of res.jobs || []) {\n    jobs.push({\n      id: 'remotive:' + m.id, source: 'Remotive', title: m.title, company: m.company_name || '',\n      type: (m.job_type || '').replace(/_/g, ' '), location: m.candidate_required_location || 'Not stated',\n      pay: m.salary || 'Not stated', url: m.url,\n      description: clean(m.description), posted: m.publication_date || '',\n    });\n  }\n}\n\n// We Work Remotely: RSS, so the node gives us XML text. We cut it into <item> blocks\n// and read each tag with a simple pattern. Titles look like \"Company: Job title\".\nconst tag = (xml, name) => {\n  const m = xml.match(new RegExp('<' + name + '(?:\\\\s[^>]*)?>([\\\\s\\\\S]*?)</' + name + '>'));\n  return m ? m[1].replace(/^\\s*<!\\[CDATA\\[/, '').replace(/\\]\\]>\\s*$/, '').trim() : '';\n};\nconst unXml = (t) => String(t || '').replace(/&lt;/g, '<').replace(/&gt;/g, '>')\n  .replace(/&quot;/g, '\"').replace(/&#39;|&apos;/g, \"'\").replace(/&amp;/g, '&');\nfor (const name of ['WWR Programming', 'WWR Other']) {\n  for (const res of from(name)) {\n    for (const item of String(res.data || '').split('<item>').slice(1)) {\n      const full = unXml(tag(item, 'title'));\n      const cut = full.indexOf(': ');\n      const link = tag(item, 'link') || tag(item, 'guid');\n      if (!link) continue;\n      jobs.push({\n        id: 'wwr:' + link.replace(/\\/+$/, '').split('/').pop(), source: 'We Work Remotely',\n        company: cut > 0 ? full.slice(0, cut) : '', title: cut > 0 ? full.slice(cut + 2) : full,\n        type: unXml(tag(item, 'type')),\n        location: unXml([tag(item, 'region'), tag(item, 'country')].filter(Boolean).join(', ')) || 'Not stated',\n        pay: 'Not stated', url: link, description: clean(unXml(tag(item, 'description'))), posted: tag(item, 'pubDate'),\n      });\n    }\n  }\n}\n\n// 4dayweek.io: JSON with a \"data\" list. Locations are a list of countries (or continents).\nfor (const res of from('4dayweek')) {\n  for (const f of res.data || []) {\n    const places = [...new Set((f.locations || []).map(l => l.country || l.continent).filter(Boolean))];\n    jobs.push({\n      id: '4dayweek:' + f.id, source: '4dayweek.io', title: f.title, company: (f.company || {}).name || '',\n      type: [f.schedule_type, f.work_arrangement].filter(Boolean).join(', ').replace(/_/g, ' '),\n      location: places.join(', ') || 'Not stated', pay: 'Not stated', url: f.url,\n      description: clean(f.description), posted: f.posted_at || '',\n    });\n  }\n}\n\n// Keep descriptions a sensible size for the small local model\nfor (const j of jobs) j.description = j.description.slice(0, 3500);\n\nreturn [{ json: { jobs, count: jobs.length } }];\n"
       },
       "id": "4cb0482e-7b3d-568c-90e9-b400c9a935f3",
       "name": "Collect Jobs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1850,
+        2450,
         100
       ]
     },
@@ -351,7 +464,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        2050,
+        2650,
         100
       ]
     }
@@ -461,6 +574,39 @@
       "main": [
         [
           {
+            "node": "WWR Programming",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WWR Programming": {
+      "main": [
+        [
+          {
+            "node": "WWR Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WWR Other": {
+      "main": [
+        [
+          {
+            "node": "4dayweek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4dayweek": {
+      "main": [
+        [
+          {
             "node": "Collect Jobs",
             "type": "main",
             "index": 0
@@ -499,8 +645,8 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "activeVersionId": "86be1f00-19c6-4516-b982-27d5576b255f",
-  "versionCounter": 1,
+  "activeVersionId": "0bd90ef6-258a-4a98-aa36-c09da19b30a4",
+  "versionCounter": 2,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
